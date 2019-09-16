@@ -10,21 +10,21 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Document(indexName = "listing",type = "salesListing", shards = 3,replicas = 0, refreshInterval = "-1")
-public class SalesListingES  implements Serializable {
+@Document(indexName = "book_list_index",type = "bookList", shards = 3,replicas = 0, refreshInterval = "-1")
+public class BookList implements Serializable {
     @Id
     private Integer id;
  
-    @Field(type = FieldType.Text, searchAnalyzer="ik_max_word", analyzer="ik_max_word")
+    @Field(type = FieldType.Keyword, searchAnalyzer="ik_max_word", analyzer="ik_max_word")
     private String enTitle;
  
-    @Field(type = FieldType.Text, searchAnalyzer="ik_max_word", analyzer="ik_max_word")
+    @Field(type = FieldType.Keyword, searchAnalyzer="ik_max_word", analyzer="ik_max_word")
     private String cnTitle;
  
     @Field(type = FieldType.Integer,store=true)
     private int categoryId;
  
-    @Field(type = FieldType.Text, searchAnalyzer="ik_max_word", analyzer="ik_max_word")
+    @Field(type = FieldType.Text, searchAnalyzer="ik_max_word", analyzer="ik_max_word",fielddata = true)
     private String description;
 
 }

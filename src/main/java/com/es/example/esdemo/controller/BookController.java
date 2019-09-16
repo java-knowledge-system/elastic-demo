@@ -4,11 +4,18 @@ import com.es.example.esdemo.entity.Book;
 import com.es.example.esdemo.repo.BookRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @RequestMapping("/book")
@@ -85,4 +92,22 @@ public class BookController {
         bookRepository.deleteAll();
         return new ResponseEntity("success", HttpStatus.OK);
     }
+    @InitBinder
+    public void initBinder(WebDataBinder binder, WebRequest request) {
+        //转换日期 注意这里的转化要和传进来的字符串的格式一直 如2015-9-9 就应该为yyyy-MM-dd
+        DateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd");
+        binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
+    }
+    @RequestMapping(value = "find_by_time", method = RequestMethod.GET)
+    public ResponseEntity<Book> findByTime(@RequestParam(value = "start",required = false) Date start, @RequestParam(value = "end",required = false)Date end) {
+        if(start ==null&&end ==null){
+            return new ResponseEntity(bookRepository.findAll(PageRequest.of(0,20)), HttpStatus.OK);
+        }else if(start !=null&&end ==null){
+            return new ResponseEntity(bookRepository.findByCreateTimeGreaterThanEqual(start.getTime()), HttpStatus.OK);
+        }else if(end !=null&&start ==null){
+            return new ResponseEntity(bookRepository.findByCreateTimeLessThanEqual(end.getTime()), HttpStatus.OK);
+        }
+        return new ResponseEntity(bookRepository.findByCreateTimeBetween(start.getTime(),end.getTime()), HttpStatus.OK);
+    }
+
 }
