@@ -90,3 +90,9 @@ rm -rf elasticsearch
 exit
 docker restart es 
 ```
+**ps**:  
+docker搭建的es环境 默认集群名称为**docker-cluster**  
+es暴露的9200端口为http监听端口，9300端口为es javaclient和集群通讯端口  
+如果用elasticsearchTemplate操作es使用9300端口
+
+
